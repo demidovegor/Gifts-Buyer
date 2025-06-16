@@ -7,6 +7,7 @@ from pyrogram import Client, types
 
 from app.notifications import send_summary_message
 from app.utils.logger import log_same_line, info
+from app.utils.heartbeat import send_heartbeat
 from data.config import config, t
 
 
@@ -78,6 +79,8 @@ class GiftMonitor:
             new_gifts and await GiftMonitor._process_new_gifts(app, new_gifts, gift_ids, callback)
 
             await GiftDetector.save_gift_history(list(current_gifts.values()))
+            if config.HEARTBEAT_MONITOR_URL:
+                asyncio.create_task(asyncio.to_thread(send_heartbeat))
             await asyncio.sleep(config.INTERVAL)
 
     @staticmethod
